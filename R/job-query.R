@@ -34,8 +34,9 @@ insert_query_job <- function(query, project,
                              create_disposition = "CREATE_IF_NEEDED",
                              write_disposition = "WRITE_EMPTY",
                              use_legacy_sql = TRUE,
+                             dry_run = TRUE,
                              ...) {
-  assert_that(is.string(project), is.string(query))
+  assertthat::assert_that(is.string(project), is.string(query))
 
   url <- bq_path(project, jobs = "")
   body <- list(
@@ -64,6 +65,7 @@ insert_query_job <- function(query, project,
     )
     body$configuration$query$createDisposition <- create_disposition
     body$configuration$query$writeDisposition <- write_disposition
+    body$configuration$query$dryRun <- dry_run
   }
 
   if (!is.null(default_dataset)) {
@@ -78,7 +80,8 @@ insert_query_job <- function(query, project,
       projectId = default_dataset$project_id,
       datasetId = default_dataset$dataset_id
     )
+    body$configuration$query$dryRun <- dry_run
   }
-
+  print(body)
   bq_post(url, body = bq_body(body, ...))
 }
